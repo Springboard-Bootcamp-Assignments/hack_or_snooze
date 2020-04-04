@@ -28,7 +28,7 @@ class StoryList {
     const response = await axios.get(`${BASE_URL}/stories`);
 
     // turn the plain old story objects from the API into instances of the Story class
-    const stories = response.data.stories.map(story => new Story(story));
+    const stories = response.data.stories.map((story) => new Story(story));
 
     // build an instance of our own class using the new array of stories
     const storyList = new StoryList(stories);
@@ -50,7 +50,7 @@ class StoryList {
 
     const response = await axios.post(`${BASE_URL}/stories`, {
       token: user.loginToken,
-      story: newStory
+      story: newStory,
     });
 
     // make a Story instance out of the story object we get back
@@ -68,15 +68,15 @@ class StoryList {
       url: `${BASE_URL}/stories/${storyId}`,
       method: "DELETE",
       data: {
-        token: user.loginToken
-      }
+        token: user.loginToken,
+      },
     });
 
     // filter out the story whose ID we are removing
-    this.stories = this.stories.filter(story => story.storyId !== storyId);
+    this.stories = this.stories.filter((story) => story.storyId !== storyId);
 
     // do the same thing for the user's list of stories
-    user.ownStories = user.ownStories.filter(s => s.storyId !== storyId);
+    user.ownStories = user.ownStories.filter((s) => s.storyId !== storyId);
   }
 }
 
@@ -112,8 +112,8 @@ class User {
       user: {
         username,
         password,
-        name
-      }
+        name,
+      },
     });
 
     // build a new User instance from the API response
@@ -135,8 +135,8 @@ class User {
     const response = await axios.post(`${BASE_URL}/login`, {
       user: {
         username,
-        password
-      }
+        password,
+      },
     });
 
     // build a new User instance from the API response
@@ -144,9 +144,11 @@ class User {
 
     // instantiate Story instances for the user's favorites and ownStories
     existingUser.favorites = response.data.user.favorites.map(
-      s => new Story(s)
+      (s) => new Story(s)
     );
-    existingUser.ownStories = response.data.user.stories.map(s => new Story(s));
+    existingUser.ownStories = response.data.user.stories.map(
+      (s) => new Story(s)
+    );
 
     // attach the token to the newUser instance for convenience
     existingUser.loginToken = response.data.token;
@@ -167,8 +169,8 @@ class User {
     // call the API
     const response = await axios.get(`${BASE_URL}/users/${username}`, {
       params: {
-        token
-      }
+        token,
+      },
     });
 
     // instantiate the user from the API information
@@ -179,17 +181,19 @@ class User {
 
     // instantiate Story instances for the user's favorites and ownStories
     existingUser.favorites = response.data.user.favorites.map(
-      s => new Story(s)
+      (s) => new Story(s)
     );
-    existingUser.ownStories = response.data.user.stories.map(s => new Story(s));
+    existingUser.ownStories = response.data.user.stories.map(
+      (s) => new Story(s)
+    );
     return existingUser;
   }
 
-  addFavorite(storyId) {
+  async addFavorite(storyId) {
     return this._toggleFavorite(storyId, "POST");
   }
 
-  removeFavorite(storyId) {
+  async removeFavorite(storyId) {
     return this._toggleFavorite(storyId, "DELETE");
   }
 
@@ -198,8 +202,8 @@ class User {
       url: `${BASE_URL}/users/${this.username}/favorites/${storyId}`,
       method: httpVerb,
       data: {
-        token: this.loginToken
-      }
+        token: this.loginToken,
+      },
     });
 
     // UPDATE THE USER INFORMATION
@@ -210,8 +214,8 @@ class User {
   async retrieveDetails() {
     const response = await axios.get(`${BASE_URL}/users/${this.username}`, {
       params: {
-        token: this.loginToken
-      }
+        token: this.loginToken,
+      },
     });
 
     // update all of the user's properties from the API response
@@ -220,8 +224,8 @@ class User {
     this.updatedAt = response.data.user.updatedAt;
 
     // remember to convert the user's favorites and ownStories into instances of Story
-    this.favorites = response.data.user.favorites.map(s => new Story(s));
-    this.ownStories = response.data.user.stories.map(s => new Story(s));
+    this.favorites = response.data.user.favorites.map((s) => new Story(s));
+    this.ownStories = response.data.user.stories.map((s) => new Story(s));
 
     return this;
   }
